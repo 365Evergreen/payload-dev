@@ -1,0 +1,6 @@
+
+.heroPost{
+    display: flex;
+    flex-direction: row;
+    justify-items: flex-end;
+}
