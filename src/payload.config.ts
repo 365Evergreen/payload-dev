@@ -12,6 +12,8 @@ import nodemailer from 'nodemailer'
 //import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
+import { Posts } from './collections/Posts'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -80,7 +82,7 @@ export default buildConfig({
     transport: transporter,
 
   }),
-  collections: [Users, Media],
+  collections: [Users, Media, Pages, Posts],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
