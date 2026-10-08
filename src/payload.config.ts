@@ -7,7 +7,9 @@ import { fileURLToPath } from 'url'
 import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { GetPlatformProxyOptions } from 'wrangler'
 import { r2Storage } from '@payloadcms/storage-r2'
-
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
+import nodemailer from 'nodemailer'
+//import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 
@@ -51,6 +53,15 @@ const cloudflareLogger = {
   silent: () => { },
 } as any // Use PayloadLogger type when it's exported
 
+const transporter = nodemailer.createTransport({
+  host: 'smtp.mx.cloudflare.net',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'api_token',
+    pass: process.env.CLOUDFLARE_API_TOKEN,
+  },
+});
 const cloudflare =
   isCLI || !isProduction
     ? await getCloudflareContextFromWrangler()
@@ -63,6 +74,12 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  email: nodemailerAdapter({
+    defaultFromAddress: 'noreply@yourdomain.com',
+    defaultFromName: 'Your App Name',
+    transport: transporter,
+
+  }),
   collections: [Users, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -77,7 +94,7 @@ export default buildConfig({
       collections: { media: true },
     }),
   ],
-})
+});
 
 // Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46
 function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {

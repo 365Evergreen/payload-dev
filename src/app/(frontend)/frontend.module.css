@@ -1,0 +1,10 @@
+.frontendContainer {
+    width: 100%;
+    background-color: aquamarine;
+}
+
+.frontendContent {
+    width: 100%;
+    padding: 0 4rem;
+    background-color: antiquewhite;
+}
