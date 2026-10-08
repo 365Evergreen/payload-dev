@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "lib": [
+      "lib": [
       "DOM",
       "DOM.Iterable",
       "ES2022"
