@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     pages: Page;
     posts: Post;
+    menus: Menu;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,6 +83,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    menus: MenusSelect<false> | MenusSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -135,9 +137,6 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  _verified?: boolean | null;
-  _verificationToken?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -235,6 +234,32 @@ export interface Post {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menus".
+ */
+export interface Menu {
+  id: number;
+  title: string;
+  slug: string;
+  order?: number | null;
+  icon?: string | null;
+  /**
+   * Leave empty for top-level menu item
+   */
+  parent?: (number | null) | Menu;
+  url: string;
+  children?:
+    | {
+        title?: string | null;
+        url?: string | null;
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -272,6 +297,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'posts';
         value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'menus';
+        value: number | Menu;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -328,9 +357,6 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
-  resetPasswordRequestedAt?: T;
-  _verified?: T;
-  _verificationToken?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -393,6 +419,28 @@ export interface PostsSelect<T extends boolean = true> {
     | {
         title?: T;
         description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menus_select".
+ */
+export interface MenusSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  order?: T;
+  icon?: T;
+  parent?: T;
+  url?: T;
+  children?:
+    | T
+    | {
+        title?: T;
+        url?: T;
+        order?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

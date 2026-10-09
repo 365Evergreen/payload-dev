@@ -14,6 +14,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
+import { Menus } from './collections/Menus'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -82,7 +83,7 @@ export default buildConfig({
     transport: transporter,
 
   }),
-  collections: [Users, Media, Pages, Posts],
+  collections: [Users, Media, Pages, Posts, Menus],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
