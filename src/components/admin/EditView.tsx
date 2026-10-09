@@ -7,7 +7,7 @@ import { RenderFields } from "@payloadcms/ui";
 /**
  * Custom Edit/Create form layout
  * Can be used to customize the document form appearance
- * Pass this component path in payload.config.ts admin.components.views.edit.root.Component
+ * Pass this component in payload.config.ts admin.components.views.edit.Component
  */
 export const CustomEditView = ({
   data,
@@ -22,9 +22,10 @@ export const CustomEditView = ({
       {/* Document header with title */}
       <div className="flex items-start gap-4">
         <SetDocumentTitle
-          data={data}
-          previousData={previousData}
-          actions={actions}
+          collectionConfig={rest.collectionConfig}
+          config={rest.config}
+          fallback={rest.isEditing ? "Editing" : "Create New"}
+          globalConfig={rest.globalConfig}
         />
       </div>
 
@@ -45,14 +46,8 @@ export const CustomEditView = ({
 
         {/* Right column - Document controls & metadata */}
         <div className="space-y-4">
-          <DocumentControls
-            // Customize toolbar actions
-            customComponents={{
-              // SaveButton: "@/components/admin/CustomSaveButton",
-              // PublishButton: "@/components/admin/CustomPublishButton",
-            }}
-          />
-          
+
+
           {/* Additional metadata or actions */}
           {/* <div className="pt-4 border-t">
             <p className="text-sm text-muted-foreground">
@@ -64,3 +59,4 @@ export const CustomEditView = ({
     </div>
   );
 };
+export default CustomEditView

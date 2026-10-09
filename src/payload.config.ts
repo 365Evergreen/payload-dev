@@ -7,9 +7,9 @@ import { fileURLToPath } from 'url'
 import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { GetPlatformProxyOptions } from 'wrangler'
 import { r2Storage } from '@payloadcms/storage-r2'
-import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
-//import SMTPTransport from 'nodemailer/lib/smtp-transport';
+
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -18,6 +18,7 @@ import { Menus } from './collections/Menus'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
 const realpath = (value: string) => {
   try {
     return fs.existsSync(value) ? fs.realpathSync(value) : undefined
@@ -54,7 +55,7 @@ const cloudflareLogger = {
   error: createLog('error', console.error),
   fatal: createLog('fatal', console.error),
   silent: () => { },
-} as any // Use PayloadLogger type when it's exported
+} as any
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.mx.cloudflare.net',
@@ -64,42 +65,58 @@ const transporter = nodemailer.createTransport({
     user: 'api_token',
     pass: process.env.CLOUDFLARE_API_TOKEN,
   },
-});
+})
+
 const cloudflare =
   isCLI || !isProduction
     ? await getCloudflareContextFromWrangler()
     : await getCloudflareContext({ async: true })
 
 export default buildConfig({
+  // 1. Correctly structured Admin Section
   admin: {
+    components: {
+      header: [{ path: './components/admin/Header', exportName: 'AdminHeader' }],
+      Nav: { path: './components/admin/Nav', exportName: 'AdminNav' },
+      views: {
+        edit: {
+          Component: {
+            path: './components/admin/EditView',
+            exportName: 'CustomEditView',
+          },
+        },
+      },
+    },
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
     },
   },
-  email: nodemailerAdapter({
-    defaultFromAddress: 'noreply@yourdomain.com',
-    defaultFromName: 'Your App Name',
-    transport: transporter,
 
-  }),
+  // 2. Extracted Core Configs (Moved outside admin wrapper)
   collections: [Users, Media, Pages, Posts, Menus],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: sqliteD1Adapter({ binding: cloudflare.env.D1 }),
+  db: sqliteD1Adapter({
+    binding: cloudflare.env.D1
+  }),
   logger: isProduction ? cloudflareLogger : undefined,
+  email: nodemailerAdapter({
+    defaultFromAddress: 'noreply@yourdomain.com',
+    defaultFromName: 'Your App Name',
+    transport: transporter,
+  }),
   plugins: [
     r2Storage({
       bucket: cloudflare.env.R2,
       collections: { media: true },
     }),
   ],
-});
+})
 
-// Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46
 function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
   return import(/* webpackIgnore: true */ `${'__wrangler'.replaceAll('_', '')}`).then(
     ({ getPlatformProxy }) =>

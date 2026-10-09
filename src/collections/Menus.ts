@@ -64,7 +64,7 @@ export const Menus: CollectionConfig = {
       label: 'Submenu Items (Mega Menu)',
       hooks: {
         beforeChange: [
-          async ({ original, data, operation }) => {
+          async ({ data, operation }) => {
             // Flatten children for mega menu display
             return data
           },
