@@ -75,18 +75,6 @@ const cloudflare =
 export default buildConfig({
   // 1. Correctly structured Admin Section
   admin: {
-    components: {
-      header: [{ path: './components/admin/Header', exportName: 'AdminHeader' }],
-      Nav: { path: './components/admin/Nav', exportName: 'AdminNav' },
-      views: {
-        edit: {
-          Component: {
-            path: './components/admin/EditView',
-            exportName: 'CustomEditView',
-          },
-        },
-      },
-    },
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
